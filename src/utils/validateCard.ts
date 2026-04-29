@@ -1,32 +1,38 @@
+// This function checks if a card number is valid using the Luhn algorithm
 export function isValidCardNumber(cardNumber: string): boolean {
-    
-  const cleanedCardNumber = cardNumber.replace(/\s+/g, "");
+  
+  // Remove all spaces from the input (e.g. "4234 1111" → "42341111")
+  const cleaned = cardNumber.replace(/\s+/g, "");
 
-  if (!/^\d+$/.test(cleanedCardNumber)) {
-    return false;
-  }
+  // Ensure the card number contains only digits
+  // If it contains letters or symbols, return false
+  if (!/^\d+$/.test(cleaned)) return false;
 
-  if (cleanedCardNumber.length < 12 || cleanedCardNumber.length > 19) {
-    return false;
-  }
+  // Check if the length is within valid card number range (12–19 digits)
+  if (cleaned.length < 12 || cleaned.length > 19) return false;
 
-  let sum = 0;
-  let shouldDouble = false;
+  let sum = 0;               // Will store the total sum
+  let shouldDouble = false;  // Controls when to double digits
 
-  for (let i = cleanedCardNumber.length - 1; i >= 0; i--) {
-    let digit = Number(cleanedCardNumber[i]);
+  // Loop through the digits from right to left
+  for (let i = cleaned.length - 1; i >= 0; i--) {
+    let digit = Number(cleaned[i]); // Convert string digit to number
 
+    // Double every second digit
     if (shouldDouble) {
-      digit = digit * 2;
+      digit *= 2;
 
-      if (digit > 9) {
-        digit = digit - 9;
-      }
+      // If doubling results in a number greater than 9,
+      // subtract 9 (Luhn rule)
+      if (digit > 9) digit -= 9;
     }
 
-    sum = sum + digit;
+    sum += digit; // Add digit to total sum
+
+    // Flip the flag (true ↔ false) for next iteration
     shouldDouble = !shouldDouble;
   }
 
+  // If the total sum is divisible by 10, the card is valid
   return sum % 10 === 0;
 }
